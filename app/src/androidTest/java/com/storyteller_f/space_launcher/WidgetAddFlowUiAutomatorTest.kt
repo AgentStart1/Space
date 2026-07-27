@@ -105,8 +105,9 @@ class WidgetAddFlowUiAutomatorTest {
     }
 
     private fun acceptBindDialogIfPresent() {
-        val allowButton = device.wait(Until.findObject(By.res("android:id/button1")), SHORT_TIMEOUT_MS)
+        val allowButton = device.wait(Until.findObject(By.res("android:id/button1")), TIMEOUT_MS)
         allowButton?.click()
+        device.waitForIdle()
     }
 
     private fun clickConfigDone() {
@@ -183,6 +184,5 @@ class WidgetAddFlowUiAutomatorTest {
         const val TEST_WIDGETS_PACKAGE = "com.storyteller_f.space_launcher.testwidgets"
         const val TIMEOUT_MS = 5_000L
         const val CONFIG_TIMEOUT_MS = 12_000L
-        const val SHORT_TIMEOUT_MS = 1_000L
     }
 }
