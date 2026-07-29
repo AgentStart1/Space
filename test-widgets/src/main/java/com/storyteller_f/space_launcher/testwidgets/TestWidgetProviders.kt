@@ -35,7 +35,7 @@ abstract class BaseTestWidgetProvider(
         update(context, appWidgetManager, appWidgetId, "options ${width}x${height} dp")
     }
 
-    protected fun update(
+    fun update(
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetId: Int,
@@ -92,6 +92,14 @@ class ConfigActivity : Activity() {
                 AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID
             )
+            if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                ConfigurableWidgetProvider().update(
+                    this,
+                    AppWidgetManager.getInstance(this),
+                    appWidgetId,
+                    "Configuration completed"
+                )
+            }
             setResult(
                 RESULT_OK,
                 Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

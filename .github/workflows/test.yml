@@ -5,6 +5,7 @@ on:
     branches: [ "main" ]
     paths:
       - 'app/**'
+      - 'test-widgets/**'
       - '**/*.gradle.kts'
       - 'gradle/libs.versions.toml'
       - 'gradle/wrapper/**'
