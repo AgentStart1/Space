@@ -10,9 +10,7 @@ val signKeyPassword: String? = System.getenv("space_sign_key_password")
 android {
     namespace = "com.storyteller_f.space_launcher"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
