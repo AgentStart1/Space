@@ -44,7 +44,14 @@ jobs:
           disable-animations: true
           script: |
             adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done'
-            ./gradlew test connectedAndroidTest --no-daemon
+            if ! ./gradlew test connectedAndroidTest --no-daemon; then
+              mkdir -p app/build/reports/device
+              adb shell dumpsys window > app/build/reports/device/window.txt
+              adb shell uiautomator dump /sdcard/window.xml
+              adb pull /sdcard/window.xml app/build/reports/device/window.xml
+              adb logcat -d > app/build/reports/device/logcat.txt
+              exit 1
+            fi
 
       - name: Upload test reports
         if: failure()
@@ -54,4 +61,5 @@ jobs:
           path: |
             app/build/reports/tests/
             app/build/reports/androidTests/
+            app/build/reports/device/
           if-no-files-found: ignore
