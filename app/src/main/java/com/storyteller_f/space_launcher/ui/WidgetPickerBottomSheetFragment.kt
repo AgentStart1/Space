@@ -10,8 +10,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -40,7 +38,7 @@ class WidgetPickerBottomSheetFragment : BottomSheetDialogFragment() {
     private var allocatedAppWidgetId: Int = -1
 
     private lateinit var adapter: WidgetPickerAdapter
-    private var allWidgets: List<AppWidgetProviderInfo> = emptyList()
+    private var allWidgets: List<WidgetPickerItem> = emptyList()
 
     companion object {
         private const val ARG_APP_WIDGET_ID = "arg_app_widget_id"
@@ -83,20 +81,26 @@ class WidgetPickerBottomSheetFragment : BottomSheetDialogFragment() {
 
         // 获取所有可用 Widget
         val appWidgetManager = AppWidgetManager.getInstance(requireContext())
-        allWidgets = appWidgetManager.installedProviders
-            .sortedWith(compareBy(
-                { getAppLabel(it) },
-                { getWidgetLabel(it) }
-            ))
+        allWidgets = appWidgetManager.installedProviders.map { info ->
+            WidgetPickerItem(
+                info = info,
+                label = getWidgetLabel(info),
+                appLabel = getAppLabel(info),
+                minWidth = info.minWidth,
+                minHeight = info.minHeight,
+                iconResource = info.icon
+            )
+        }.sortedWith(compareBy({ it.appLabel }, { it.label }))
 
         // 设置 RecyclerView
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_widget_list)
-        adapter = WidgetPickerAdapter(allWidgets) { info ->
+        adapter = WidgetPickerAdapter { info ->
             onWidgetSelected?.invoke(info, allocatedAppWidgetId)
             dismiss()
         }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+        adapter.submitList(allWidgets)
 
         // 搜索框
         val searchInput = view.findViewById<TextInputEditText>(R.id.et_widget_search)
@@ -114,12 +118,12 @@ class WidgetPickerBottomSheetFragment : BottomSheetDialogFragment() {
             allWidgets
         } else {
             val lowerQuery = query.lowercase()
-            allWidgets.filter { info ->
-                getWidgetLabel(info).lowercase().contains(lowerQuery) ||
-                        getAppLabel(info).lowercase().contains(lowerQuery)
+            allWidgets.filter { item ->
+                item.label.lowercase().contains(lowerQuery) ||
+                        item.appLabel.lowercase().contains(lowerQuery)
             }
         }
-        adapter.updateList(filtered)
+        adapter.submitList(filtered)
     }
 
     private fun getWidgetLabel(info: AppWidgetProviderInfo): String {
@@ -142,57 +146,4 @@ class WidgetPickerBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // Inner Adapter
-    // ──────────────────────────────────────────────────────────────────────────
-
-    inner class WidgetPickerAdapter(
-        private var items: List<AppWidgetProviderInfo>,
-        private val onClick: (AppWidgetProviderInfo) -> Unit
-    ) : RecyclerView.Adapter<WidgetPickerAdapter.ViewHolder>() {
-
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val icon: ImageView = view.findViewById(R.id.widget_icon)
-            val label: TextView = view.findViewById(R.id.widget_label)
-            val appName: TextView = view.findViewById(R.id.widget_app_name)
-            val size: TextView = view.findViewById(R.id.widget_size)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val v = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_widget_picker, parent, false)
-            return ViewHolder(v)
-        }
-
-        override fun getItemCount() = items.size
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val info = items[position]
-            val pm = requireContext().packageManager
-
-            // 图标
-            try {
-                holder.icon.setImageDrawable(info.loadIcon(requireContext(), resources.displayMetrics.densityDpi))
-            } catch (e: Exception) {
-                holder.icon.setImageResource(android.R.drawable.sym_def_app_icon)
-            }
-
-            // Widget 名称
-            holder.label.text = getWidgetLabel(info)
-
-            // App 名称
-            holder.appName.text = getAppLabel(info)
-
-            // 最小尺寸
-            holder.size.text = "${info.minWidth} × ${info.minHeight} dp"
-
-            // 点击事件
-            holder.itemView.setOnClickListener { onClick(info) }
-        }
-
-        fun updateList(newList: List<AppWidgetProviderInfo>) {
-            items = newList
-            notifyDataSetChanged()
-        }
-    }
 }

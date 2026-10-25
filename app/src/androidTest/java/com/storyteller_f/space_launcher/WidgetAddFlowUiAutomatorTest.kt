@@ -76,6 +76,33 @@ class WidgetAddFlowUiAutomatorTest {
         return activity
     }
 
+    @Test
+    fun cancelConfigurationDoesNotSaveWidgetAndAllowsRetry() {
+        val activity = launchActivity()
+        try {
+            instrumentation.runOnMainSync { activity.openWidgetPanelForTest() }
+            instrumentation.waitForIdleSync()
+            waitForWidgetPanel()
+            clickWidgetMenu()
+            clickText("添加 Widget")
+            filterWidget("Configurable")
+            clickText("Space Test Configurable Widget")
+            acceptBindDialogIfPresent()
+            assertNotNull(
+                "Configuration did not open",
+                device.wait(Until.findObject(By.res(TEST_WIDGETS_PACKAGE, "config_done")), CONFIG_TIMEOUT_MS)
+            )
+            device.pressBack()
+            waitForWidgetPanel()
+            waitForWidgetCount(activity, 0)
+
+            addWidget(TestWidget("Space Test Configurable Widget", "Configurable", true))
+            waitForWidgetCount(activity, 1)
+        } finally {
+            instrumentation.runOnMainSync { activity.finish() }
+        }
+    }
+
     private fun addWidget(widget: TestWidget) {
         clickWidgetMenu()
         clickText("添加 Widget")

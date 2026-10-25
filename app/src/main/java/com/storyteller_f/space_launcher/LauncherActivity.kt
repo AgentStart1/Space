@@ -66,8 +66,6 @@ class LauncherActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         // Don't use enableEdgeToEdge() as it overrides the transparent window background
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
-        window.navigationBarColor = android.graphics.Color.TRANSPARENT
         setContentView(R.layout.activity_launcher)
         // Ensure DecorView background doesn't block wallpaper
         window.decorView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
@@ -142,7 +140,8 @@ class LauncherActivity : FragmentActivity() {
     @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        println("onActivityResult: $requestCode, $resultCode, $data")
+        // AppWidgetHost's public configuration API uses this callback, including
+        // widgets in another profile. Binding uses the AndroidX result launcher.
         widgetController.onActivityResult(requestCode, resultCode, data)
     }
     
@@ -230,7 +229,7 @@ class LauncherActivity : FragmentActivity() {
     private fun showPopupMenu(x: Float, y: Float) {
         dismissPopupWindow()
 
-        val popupView = layoutInflater.inflate(R.layout.popup_menu_layout, null)
+        val popupView = layoutInflater.inflate(R.layout.popup_menu_layout, FrameLayout(this), false)
         popupWindow = PopupWindow(popupView, FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, true).apply {
             isFocusable = true
             isOutsideTouchable = true

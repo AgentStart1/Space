@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="popup_surface">#FDFBFF</color>
     <color name="popup_surface_stroke">#22000000</color>
     <color name="popup_item_ripple">#1F6750A4</color>
     <color name="popup_text_primary">#1D1B20</color>
-    <color name="popup_text_secondary">#625B71</color>
     <color name="popup_icon_tint">#6750A4</color>
     <color name="popup_danger">#BA1A1A</color>
     <color name="app_drawer_panel_background">#DDFDFBFF</color>
