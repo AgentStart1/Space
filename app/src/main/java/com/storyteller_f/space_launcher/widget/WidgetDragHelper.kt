@@ -9,6 +9,7 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.ScrollView
 import android.content.ContextWrapper
+import androidx.core.view.isVisible
 import android.view.ViewConfiguration
 import com.storyteller_f.space_launcher.LauncherActivity
 import kotlin.math.ceil
@@ -347,7 +348,7 @@ class WidgetDragHelper(
     private fun findChildByPosition(x: Int, y: Int): View? {
         for (i in cellLayout.childCount - 1 downTo 0) {
             val child = cellLayout.getChildAt(i)
-            if (child.visibility == View.VISIBLE) {
+            if (child.isVisible) {
                 val bounds = Rect()
                 child.getHitRect(bounds)
                 if (bounds.contains(x, y)) {

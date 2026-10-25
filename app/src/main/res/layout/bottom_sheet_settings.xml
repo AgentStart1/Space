@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?attr/colorSurface">
+    android:padding="16dp">
 
     <!-- Bottom Sheet 标题栏 -->
     <LinearLayout
@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="设置"
+            android:text="@string/settings_title"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface" />
@@ -31,7 +31,7 @@
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:contentDescription="关闭设置" />
+            android:contentDescription="@string/close_settings" />
 
     </LinearLayout>
 
@@ -55,7 +55,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="应用抽屉设置"
+                android:text="@string/drawer_settings_title"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"
@@ -78,7 +78,7 @@
                         android:id="@+id/tv_drawer_columns_label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="抽屉列数"
+                        android:text="@string/drawer_columns_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="4dp" />
@@ -86,7 +86,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="设置应用抽屉中应用图标的列数"
+                        android:text="@string/drawer_columns_description"
                         android:textSize="12sp"
                         android:textColor="?android:attr/textColorSecondary"
                         android:layout_marginBottom="12dp" />
@@ -104,7 +104,7 @@
                         android:id="@+id/tv_drawer_columns_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="当前列数: 4"
+                        tools:text="当前列数: 4"
                         android:textSize="12sp"
                         android:layout_gravity="end"
                         android:textStyle="bold" />
@@ -117,7 +117,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="桌面小部件设置"
+                android:text="@string/widget_settings_title"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"
@@ -141,7 +141,7 @@
                         android:id="@+id/tv_widget_columns_label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="桌面列数"
+                        android:text="@string/widget_columns_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="4dp" />
@@ -149,7 +149,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="设置桌面上小部件的列数（更改后需重新添加小部件）"
+                        android:text="@string/widget_columns_description"
                         android:textSize="12sp"
                         android:textColor="?android:attr/textColorSecondary"
                         android:layout_marginBottom="12dp" />
@@ -167,7 +167,7 @@
                         android:id="@+id/tv_widget_columns_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="当前列数: 4"
+                        tools:text="当前列数: 4"
                         android:textSize="12sp"
                         android:layout_gravity="end"
                         android:textStyle="bold" />
@@ -176,7 +176,7 @@
                         android:id="@+id/tv_widget_warning"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="注意：更改列数将清除现有小部件，请重新添加"
+                        android:text="@string/widget_columns_warning"
                         android:textSize="11sp"
                         android:textColor="@android:color/holo_red_dark"
                         android:layout_marginTop="8dp"
@@ -191,7 +191,7 @@
                 android:id="@+id/btn_reset_defaults"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="恢复默认设置"
+                android:text="@string/reset_settings_title"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_marginTop="8dp" />
 
@@ -199,7 +199,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Debug 设置"
+                android:text="@string/debug_settings_title"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"
@@ -236,14 +236,14 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="显示占位背景"
+                                android:text="@string/show_cell_background"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="显示cell占位背景色（红色=已占用，绿色=空闲）"
+                                android:text="@string/show_cell_background_description"
                                 android:textSize="12sp"
                                 android:textColor="?android:attr/textColorSecondary" />
 
@@ -273,14 +273,14 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="显示网格线"
+                                android:text="@string/show_grid_lines"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="显示单元格分割线"
+                                android:text="@string/show_grid_lines_description"
                                 android:textSize="12sp"
                                 android:textColor="?android:attr/textColorSecondary" />
 

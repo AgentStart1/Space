@@ -11,6 +11,9 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
+import android.view.ViewConfiguration
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
@@ -50,14 +53,51 @@ class WidgetCellLayout @JvmOverloads constructor(
 
     var dragHelper: WidgetDragHelper? = null
     var onLayoutCompleted: (() -> Unit)? = null
+    private val clickTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
+    private var clickDownX = 0f
+    private var clickDownY = 0f
+    private var clickPending = false
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         return dragHelper?.onInterceptTouchEvent(ev) ?: super.onInterceptTouchEvent(ev)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return dragHelper?.onTouchEvent(event) ?: super.onTouchEvent(event)
+        if (dragHelper?.onTouchEvent(event) == true) {
+            clickPending = false
+            isPressed = false
+            return true
+        }
+        if (!isClickable || !isEnabled) return super.onTouchEvent(event)
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                clickDownX = event.x
+                clickDownY = event.y
+                clickPending = true
+                isPressed = true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (abs(event.x - clickDownX) > clickTouchSlop || abs(event.y - clickDownY) > clickTouchSlop) {
+                    clickPending = false
+                    isPressed = false
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                val shouldClick = clickPending && abs(event.x - clickDownX) <= clickTouchSlop &&
+                    abs(event.y - clickDownY) <= clickTouchSlop
+                clickPending = false
+                isPressed = false
+                if (shouldClick) performClick()
+            }
+            MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_CANCEL -> {
+                clickPending = false
+                isPressed = false
+            }
+        }
+        return true
     }
+
+    override fun performClick(): Boolean = super.performClick()
 
     override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
         super.requestDisallowInterceptTouchEvent(disallowIntercept)
@@ -196,7 +236,7 @@ class WidgetCellLayout @JvmOverloads constructor(
         // Measure each child using its cell span
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child.visibility == View.GONE) continue
+            if (child.isGone) continue
             val lp = child.layoutParams as WidgetCellLayoutParams
             lp.setup(cellWidth, cellHeight, borderSpacePx, borderSpacePx)
             child.measure(
@@ -211,7 +251,7 @@ class WidgetCellLayout @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child.visibility == View.GONE) continue
+            if (child.isGone) continue
             val lp = child.layoutParams as WidgetCellLayoutParams
 
             val left = paddingLeft + lp.pixelX

@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="20dp"
-        android:contentDescription="Widget 菜单"
+        android:contentDescription="@string/widget_menu_description"
         android:src="@drawable/ic_more_horiz_rounded_24"
         app:backgroundTint="@color/widget_fab_container"
         app:elevation="8dp"

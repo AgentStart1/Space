@@ -19,6 +19,9 @@ import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isEmpty
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -71,6 +74,11 @@ class WidgetController(
         val deferred: CompletableDeferred<ActivityResultEvent>
     )
     private var pendingActivityResult: PendingActivityResult? = null
+    private val bindWidgetLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        onActivityResult(REQUEST_BIND_APPWIDGET, result.resultCode, result.data)
+    }
     
     private val settingsChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -359,7 +367,7 @@ class WidgetController(
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, info.provider)
                 }
                 val result = awaitActivityResult(REQUEST_BIND_APPWIDGET) {
-                    activity.startActivityForResult(intent, REQUEST_BIND_APPWIDGET)
+                    bindWidgetLauncher.launch(intent)
                 }
                 result.resultCode == Activity.RESULT_OK
             } else true
@@ -582,7 +590,7 @@ class WidgetController(
     }
 
     private fun clearAllWidgets() {
-        if (cellLayout.childCount == 0) {
+        if (cellLayout.isEmpty()) {
             Toast.makeText(activity, "No widgets to clear", Toast.LENGTH_SHORT).show()
             return
         }
@@ -617,7 +625,7 @@ class WidgetController(
             
             builder.appendLine("--- Widget #$i ---")
             builder.appendLine("AppWidgetId: $widgetId")
-            builder.appendLine("Widget Name: ${appWidgetInfo?.label ?: "Unknown"}")
+            builder.appendLine("Widget Name: ${appWidgetInfo?.loadLabel(activity.packageManager) ?: "Unknown"}")
             builder.appendLine("Min Size: ${appWidgetInfo?.minWidth}dp x ${appWidgetInfo?.minHeight}dp")
             builder.appendLine("Target Size: ${appWidgetInfo?.targetCellWidth} x ${appWidgetInfo?.targetCellHeight}")
             builder.appendLine("Cell Position: (${layoutParams?.cellX ?: -1}, ${layoutParams?.cellY ?: -1})")
@@ -694,7 +702,7 @@ class WidgetController(
 
         // 创建popup view
         val popupView = activity.layoutInflater
-            .inflate(R.layout.popup_widget_menu, null)
+            .inflate(R.layout.popup_widget_menu, android.widget.FrameLayout(activity), false)
 
         // 设置popup window
         menuPopupWindow = PopupWindow(
@@ -707,7 +715,7 @@ class WidgetController(
             isFocusable = true
             elevation = 8f
             // 设置背景以支持点击外部关闭
-            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            setBackgroundDrawable(android.graphics.Color.TRANSPARENT.toDrawable())
 
             // Measure popup before positioning so we get real pixel dimensions, not WRAP_CONTENT (-2).
             popupView.measure(
@@ -852,7 +860,7 @@ class WidgetController(
     }
 
     private suspend fun awaitWidgetChildrenLaidOut(reason: String) {
-        if (!::cellLayout.isInitialized || cellLayout.childCount == 0 || areWidgetChildrenLaidOut()) {
+        if (!::cellLayout.isInitialized || cellLayout.isEmpty() || areWidgetChildrenLaidOut()) {
             return
         }
 

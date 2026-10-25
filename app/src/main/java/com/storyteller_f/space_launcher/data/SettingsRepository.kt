@@ -2,6 +2,7 @@ package com.storyteller_f.space_launcher.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 class SettingsRepository(context: Context) {
 
@@ -37,7 +38,9 @@ class SettingsRepository(context: Context) {
 
     fun setDrawerColumns(columns: Int, isLandscape: Boolean = false) {
         val key = if (isLandscape) KEY_DRAWER_COLUMNS_LAND else KEY_DRAWER_COLUMNS
-        prefs.edit().putInt(key, columns).apply()
+        prefs.edit {
+            putInt(key, columns)
+        }
     }
 
     // ── Widget Columns ───────────────────────────────────────────────────────
@@ -52,7 +55,9 @@ class SettingsRepository(context: Context) {
 
     fun setWidgetColumns(columns: Int, isLandscape: Boolean = false) {
         val key = if (isLandscape) KEY_WIDGET_COLUMNS_LAND else KEY_WIDGET_COLUMNS
-        prefs.edit().putInt(key, columns).apply()
+        prefs.edit {
+            putInt(key, columns)
+        }
     }
 
     // ── Debug Switches ───────────────────────────────────────────────────────
@@ -62,7 +67,9 @@ class SettingsRepository(context: Context) {
     }
 
     fun setShowCellBackground(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_SHOW_CELL_BACKGROUND, enabled).apply()
+        prefs.edit {
+            putBoolean(KEY_SHOW_CELL_BACKGROUND, enabled)
+        }
     }
 
     fun isShowGridLines(): Boolean {
@@ -70,7 +77,9 @@ class SettingsRepository(context: Context) {
     }
 
     fun setShowGridLines(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_SHOW_GRID_LINES, enabled).apply()
+        prefs.edit {
+            putBoolean(KEY_SHOW_GRID_LINES, enabled)
+        }
     }
 
     // ── Widget Layout Data ───────────────────────────────────────────────────
@@ -89,9 +98,9 @@ class SettingsRepository(context: Context) {
      */
     fun saveWidgetDataForLayout(widgetInfosJson: String, isLandscape: Boolean = false) {
         val layoutKey = getCurrentLayoutKey(isLandscape)
-        widgetPrefs.edit()
-            .putString(layoutKey, widgetInfosJson)
-            .apply()
+        widgetPrefs.edit {
+            putString(layoutKey, widgetInfosJson)
+        }
     }
 
     /**
@@ -116,9 +125,9 @@ class SettingsRepository(context: Context) {
      */
     fun clearWidgetDataForLayout(isLandscape: Boolean = false) {
         val layoutKey = getCurrentLayoutKey(isLandscape)
-        widgetPrefs.edit()
-            .remove(layoutKey)
-            .apply()
+        widgetPrefs.edit {
+            remove(layoutKey)
+        }
     }
 
     // ── Reset ────────────────────────────────────────────────────────────────
@@ -127,11 +136,11 @@ class SettingsRepository(context: Context) {
      * 恢复所有设置为默认值
      */
     fun resetToDefaults() {
-        prefs.edit()
-            .putInt(KEY_DRAWER_COLUMNS, DEFAULT_DRAWER_COLUMNS)
-            .putInt(KEY_WIDGET_COLUMNS, DEFAULT_WIDGET_COLUMNS)
-            .putInt(KEY_DRAWER_COLUMNS_LAND, DEFAULT_DRAWER_COLUMNS_LAND)
-            .putInt(KEY_WIDGET_COLUMNS_LAND, DEFAULT_WIDGET_COLUMNS_LAND)
-            .apply()
+        prefs.edit {
+            putInt(KEY_DRAWER_COLUMNS, DEFAULT_DRAWER_COLUMNS)
+            putInt(KEY_WIDGET_COLUMNS, DEFAULT_WIDGET_COLUMNS)
+            putInt(KEY_DRAWER_COLUMNS_LAND, DEFAULT_DRAWER_COLUMNS_LAND)
+            putInt(KEY_WIDGET_COLUMNS_LAND, DEFAULT_WIDGET_COLUMNS_LAND)
+        }
     }
 }

@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center_vertical"
-            android:hint="搜索应用"
+            android:hint="@string/search_apps_hint"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"

@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.UserHandle
 import android.os.UserManager
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.drawable.toBitmap
 import kotlin.math.roundToInt
 
@@ -54,7 +55,7 @@ class AppRepository(private val context: Context) {
 
     private fun Drawable.toFixedSizeBitmapDrawable(size: Int): BitmapDrawable {
         val bitmap = toBitmap(size, size, Bitmap.Config.ARGB_8888)
-        return BitmapDrawable(context.resources, bitmap).apply {
+        return bitmap.toDrawable(context.resources).apply {
             setBounds(0, 0, size, size)
         }
     }

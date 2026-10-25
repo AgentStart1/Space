@@ -24,6 +24,9 @@ class WidgetPanelScrollView @JvmOverloads constructor(
     private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
     private var activeNestedScrollTarget: View? = null
     private var lastRawY = 0f
+    private var clickDownX = 0f
+    private var clickDownY = 0f
+    private var clickPending = false
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         val superIntercepted = super.onInterceptTouchEvent(ev)
@@ -57,11 +60,33 @@ class WidgetPanelScrollView @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(ev: MotionEvent): Boolean {
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                clickDownX = ev.x
+                clickDownY = ev.y
+                clickPending = isClickable && isEnabled
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (abs(ev.x - clickDownX) > touchSlop || abs(ev.y - clickDownY) > touchSlop) {
+                    clickPending = false
+                }
+            }
+            MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_CANCEL -> clickPending = false
+            MotionEvent.ACTION_UP -> {
+                if (clickPending && abs(ev.x - clickDownX) <= touchSlop &&
+                    abs(ev.y - clickDownY) <= touchSlop && isEnabled) {
+                    performClick()
+                }
+                clickPending = false
+            }
+        }
         if (ev.actionMasked == MotionEvent.ACTION_UP || ev.actionMasked == MotionEvent.ACTION_CANCEL) {
             activeNestedScrollTarget = null
         }
         return super.onTouchEvent(ev)
     }
+
+    override fun performClick(): Boolean = super.performClick()
 
     override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
         // When a child (e.g. drag helper) takes over touch handling, clear the nested

@@ -39,7 +39,9 @@ class SettingsBottomSheetFragment : BottomSheetDialogFragment() {
 
         // 判断当前是否横屏
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val orientationLabel = if (isLandscape) "横屏" else "竖屏"
+        val orientationLabel = getString(
+            if (isLandscape) R.string.orientation_landscape else R.string.orientation_portrait
+        )
 
         // 初始化视图
         sliderDrawerColumns = view.findViewById(R.id.slider_drawer_columns)
@@ -52,9 +54,9 @@ class SettingsBottomSheetFragment : BottomSheetDialogFragment() {
 
         // 若布局中存在专用 label，则更新提示文字（可选 ID，兼容旧布局）
         view.findViewById<TextView>(R.id.tv_drawer_columns_label)?.text =
-            "抽屉列数（当前：$orientationLabel）"
+            getString(R.string.drawer_columns_orientation, orientationLabel)
         view.findViewById<TextView>(R.id.tv_widget_columns_label)?.text =
-            "桌面列数（当前：$orientationLabel）"
+            getString(R.string.widget_columns_orientation, orientationLabel)
 
         // 关闭按钮
         view.findViewById<View>(R.id.btn_close_settings).setOnClickListener {
@@ -82,7 +84,7 @@ class SettingsBottomSheetFragment : BottomSheetDialogFragment() {
             settingsRepo.setDrawerColumns(columns, isLandscape)
             Toast.makeText(
                 requireContext(),
-                "抽屉列数（$orientationLabel）已更改为 $columns",
+                getString(R.string.drawer_columns_changed, orientationLabel, columns),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -120,11 +122,11 @@ class SettingsBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun updateDrawerColumnsText(columns: Int, orientationLabel: String) {
-        tvDrawerColumnsValue.text = "当前列数（$orientationLabel）: $columns"
+        tvDrawerColumnsValue.text = getString(R.string.current_columns, orientationLabel, columns)
     }
 
     private fun updateWidgetColumnsText(columns: Int, orientationLabel: String) {
-        tvWidgetColumnsValue.text = "当前列数（$orientationLabel）: $columns"
+        tvWidgetColumnsValue.text = getString(R.string.current_columns, orientationLabel, columns)
     }
 
     private fun showWidgetColumnChangeWarning(
@@ -133,17 +135,16 @@ class SettingsBottomSheetFragment : BottomSheetDialogFragment() {
         orientationLabel: String
     ) {
         AlertDialog.Builder(requireContext())
-            .setTitle("列数更改提醒")
+            .setTitle(R.string.widget_columns_change_title)
             .setMessage(
-                "您已将桌面列数（$orientationLabel）更改为 $newColumns 列。\n\n" +
-                        "更改列数将会清除当前方向布局的小部件，您需要重新添加它们。\n\n是否继续？"
+                getString(R.string.widget_columns_change_message, orientationLabel, newColumns)
             )
-            .setPositiveButton("确认更改") { _, _ ->
+            .setPositiveButton(R.string.confirm_change) { _, _ ->
                 settingsRepo.setWidgetColumns(newColumns, isLandscape)
                 sendRefreshBroadcast()
-                Toast.makeText(requireContext(), "列数已更改，请重新添加小部件", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), R.string.widget_columns_changed, Toast.LENGTH_LONG).show()
             }
-            .setNegativeButton("取消") { _, _ ->
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 sliderWidgetColumns.value = settingsRepo.getWidgetColumns(isLandscape).toFloat()
                 updateWidgetColumnsText(settingsRepo.getWidgetColumns(isLandscape), orientationLabel)
                 tvWidgetWarning.visibility = View.GONE
@@ -154,15 +155,17 @@ class SettingsBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun showResetConfirmationDialog(isLandscape: Boolean, orientationLabel: String) {
         AlertDialog.Builder(requireContext())
-            .setTitle("恢复默认设置")
+            .setTitle(R.string.reset_settings_title)
             .setMessage(
-                "确定要恢复所有设置为默认值吗？\n\n" +
-                        "抽屉列数 竖屏=${SettingsRepository.DEFAULT_DRAWER_COLUMNS}，" +
-                        "横屏=${SettingsRepository.DEFAULT_DRAWER_COLUMNS_LAND}；\n" +
-                        "桌面列数 竖屏=${SettingsRepository.DEFAULT_WIDGET_COLUMNS}，" +
-                        "横屏=${SettingsRepository.DEFAULT_WIDGET_COLUMNS_LAND}。"
+                getString(
+                    R.string.reset_settings_message,
+                    SettingsRepository.DEFAULT_DRAWER_COLUMNS,
+                    SettingsRepository.DEFAULT_DRAWER_COLUMNS_LAND,
+                    SettingsRepository.DEFAULT_WIDGET_COLUMNS,
+                    SettingsRepository.DEFAULT_WIDGET_COLUMNS_LAND
+                )
             )
-            .setPositiveButton("恢复默认") { _, _ ->
+            .setPositiveButton(R.string.restore_defaults) { _, _ ->
                 settingsRepo.resetToDefaults()
 
                 val defaultDrawer = settingsRepo.getDrawerColumns(isLandscape)
@@ -174,9 +177,9 @@ class SettingsBottomSheetFragment : BottomSheetDialogFragment() {
                 tvWidgetWarning.visibility = View.GONE
 
                 sendRefreshBroadcast()
-                Toast.makeText(requireContext(), "已恢复默认设置", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.settings_reset, Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("取消", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
