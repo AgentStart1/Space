@@ -16,6 +16,10 @@ Build, run local unit tests, and check lint with the Gradle wrapper:
 ```
 
 The Android Test workflow also runs instrumented tests on an API 34 emulator.
+CI uses the AOSP image because the app does not require Google Play services.
+This avoids Pixel Launcher startup ANR dialogs from the Google APIs image
+covering the launcher UI. The emulator is awakened and unlocked before tests;
+UI assertions remain enabled and the default home app is unchanged.
 Run `./gradlew :app:connectedDebugAndroidTest` on an API 37 device or emulator
 when validating changes to the target SDK. App lint should have no warnings or
 errors.
